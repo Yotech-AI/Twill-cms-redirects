@@ -23,7 +23,7 @@ class RedirectRequest extends Request
             'redirects' => 'nullable|array',
             'redirects.*.from' => 'required_with:redirects|string',
             'redirects.*.to' => 'required_with:redirects|string',
-            'redirects.*.statuscode' => 'nullable|integer',
+            'redirects.*.statuscode' => 'nullable|integer|in:301,302,307,308',
         ];
     }
 }

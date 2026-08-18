@@ -8,7 +8,7 @@ use TwillRedirects\Twill\Capsules\Redirects\Repositories\RedirectRepository;
 
 class RedirectSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         if (Redirect::count() > 0) {
             return;

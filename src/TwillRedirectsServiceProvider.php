@@ -2,11 +2,9 @@
 
 namespace TwillRedirects;
 
-use A17\Twill\TwillPackageServiceProvider;
-use A17\Twill\Facades\TwillNavigation;
-use A17\Twill\View\Components\Navigation\NavigationLink;
+use TwillRedirects\PluginPage\TwillPluginServiceProvider;
 
-class TwillRedirectsServiceProvider extends TwillPackageServiceProvider
+class TwillRedirectsServiceProvider extends TwillPluginServiceProvider
 {
     public function boot(): void
     {
@@ -20,5 +18,15 @@ class TwillRedirectsServiceProvider extends TwillPackageServiceProvider
                 $migrationPath => database_path('migrations'),
             ], 'twill-cms-redirects-migrations');
         }
+    }
+
+    protected function twillPlugin(): array
+    {
+        return [
+            'name' => 'Redirects',
+            'description' => 'Manage URL redirects that are applied by middleware on every request.',
+            'package' => 'yotech-ai/twill-cms-redirects',
+            'route' => config('twill.admin_route_name_prefix', 'twill.') . 'redirect',
+        ];
     }
 }
