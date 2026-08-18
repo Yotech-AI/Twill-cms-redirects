@@ -1,10 +1,13 @@
 {
   "name": "yotech-ai/twill-cms-redirects",
-  "description": "A Twill CMS package",
+  "description": "Redirect management for Twill CMS, with a shared Plugins page for Yotech Twill packages",
+  "keywords": ["twill", "laravel", "cms", "redirects", "twill-plugin"],
   "homepage": "https://github.com/Yotech-AI/twill-cms-redirects",
   "license": "MIT",
+  "type": "library",
   "require": {
-    "area17/twill": "^3.4"
+    "php": "^8.1",
+    "area17/twill": "^3.6"
   },
   "autoload": {
     "psr-4": {

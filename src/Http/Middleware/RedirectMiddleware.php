@@ -3,6 +3,7 @@
 namespace TwillRedirects\Http\Middleware;
 
 use Closure;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -17,24 +18,41 @@ class RedirectMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $redirects = Cache::rememberForever('twill_redirects', function () {
-            return optional(Redirect::first())->redirects ?? [];
-        });
-
         $path = '/' . ltrim($request->path(), '/');
 
-        foreach ($redirects as $rule) {
+        foreach ($this->redirectRules() as $rule) {
             $from = $rule['from'] ?? null;
             $to = $rule['to'] ?? null;
             $status = (int) ($rule['statuscode'] ?? 302);
 
-            if ($from && $this->matches($path, $from)) {
-                Log::info('Redirect match', ['from' => $path, 'to' => $to, 'status' => $status]);
+            if ($from && $to && $this->matches($path, $from)) {
+                Log::debug('twill-cms-redirects: redirect matched', [
+                    'from' => $path,
+                    'to' => $to,
+                    'status' => $status,
+                ]);
+
                 return redirect($to, $status);
             }
         }
 
         return $next($request);
+    }
+
+    /**
+     * The middleware runs on every request, including before the package
+     * migration has run on a fresh install — fail open in that case
+     * instead of taking the whole site down.
+     */
+    private function redirectRules(): array
+    {
+        try {
+            return Cache::rememberForever('twill_redirects', function () {
+                return Redirect::query()->first()?->redirects ?? [];
+            });
+        } catch (QueryException) {
+            return [];
+        }
     }
 
     private function matches(string $path, string $pattern): bool
